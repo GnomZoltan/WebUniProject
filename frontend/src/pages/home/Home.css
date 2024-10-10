@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.auth-buttons {
+  display: flex;
+}
+
+.header-button {
+  background-color: white;
+  color: #4caf50;
+  border: 1px solid white;
+  padding: 10px 15px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.header-button:hover {
+  background-color: #f1f1f1;
+}
+
+.App-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.get-all-button {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.get-all-button:hover {
+  background-color: #45a049;
+}
