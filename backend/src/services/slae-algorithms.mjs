@@ -1,8 +1,13 @@
-export function solveByJacobi(
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function solveByJacobi(
   matrix,
   results,
   tolerance = 1e-10,
-  maxIterations = 100
+  maxIterations = 200,
+  onProgress = () => {}
 ) {
   const n = matrix.length;
   let x = new Array(n).fill(0);
@@ -32,14 +37,15 @@ export function solveByJacobi(
     iterations++;
   }
 
-  if (iterations === maxIterations) {
-    console.warn("Максимальна кількість ітерацій досягнута");
-  }
+  // Відправка прогресу
+  const progress = Math.floor((iterations / maxIterations) * 100);
+  onProgress(progress);
 
+  await delay(20000);
   return x;
 }
 
-export function solveByCramer(matrix, results) {
+export async function solveByCramer(matrix, results, onProgress = () => {}) {
   const n = matrix.length;
 
   const determinant = (m) => {
@@ -77,10 +83,19 @@ export function solveByCramer(matrix, results) {
     solution[i] = detAi / detA;
   }
 
+  // Відправка прогресу
+  const progress = Math.floor(((i + 1) / n) * 100);
+  onProgress(progress);
+
+  await delay(20000);
   return solution;
 }
 
-export function solveByGauss(coefficients, results) {
+export async function solveByGauss(
+  coefficients,
+  results,
+  onProgress = () => {}
+) {
   const n = coefficients.length;
 
   const matrix = coefficients.map((row, i) => [...row, results[i]]);
@@ -92,6 +107,11 @@ export function solveByGauss(coefficients, results) {
         matrix[j][k] -= factor * matrix[i][k];
       }
     }
+    // Відправка прогресу після кожного рядка
+    const progress = Math.floor(((i + 1) / n) * 50); // 50% прогрес на прямий хід
+    onProgress(progress);
+
+    await delay(10000); // Імітація довготривалої операції
   }
 
   const solution = new Array(n);
@@ -103,5 +123,10 @@ export function solveByGauss(coefficients, results) {
     solution[i] /= matrix[i][i];
   }
 
+  // Відправка прогресу після кожного обчислення змінної
+  const progress = 50 + Math.floor(((n - i) / n) * 50); // Друга половина прогресу
+  onProgress(progress);
+
+  await delay(10000);
   return solution;
 }

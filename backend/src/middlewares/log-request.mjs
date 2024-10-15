@@ -9,22 +9,41 @@ const logRequest = async (req, res, next) => {
   if (!claims) res.status(401).send({ message: "unaunthenticated" });
 
   const userId = claims._id;
-  console.log(userId);
 
-  const log = new RequestHistory({
-    method: req.method,
-    url: req.url,
-    headers: req.headers,
-    body: req.body,
-    query: req.query,
-    params: req.params,
-    user: userId,
-  });
+  let description = "";
 
-  log
-    .save()
-    .then(() => console.log("Запит збережено"))
-    .catch((err) => console.error("Помилка при збереженні запиту:", err));
+  switch (req.url) {
+    case "/api/solve/gauss":
+      description = "Gauss method of solving equations";
+      break;
+    case "/api/solve/cramer":
+      description = "Cramer method of solving equations";
+      break;
+    case "/api/solve/jakobi":
+      description = "Jakobi method of solving equations";
+      break;
+    default:
+      description = "General API request";
+  }
+
+  const originalSend = res.send;
+  res.send = function (body) {
+    const { result, complexity } = body;
+
+    const log = new RequestHistory({
+      description: description,
+      user: userId,
+      outputResult: result,
+      outputComplexity: complexity,
+    });
+
+    log
+      .save()
+      //.then(() => console.log("Запит збережено"))
+      .catch((err) => console.error(""));
+
+    originalSend.apply(res, arguments);
+  };
 
   next();
 };

@@ -9,11 +9,11 @@ import logRequest from "../middlewares/log-request.mjs";
 const router = Router();
 
 router.use("/api/auth", authRouter);
-router.use("/api/user", userRouter);
+router.use("/api/solve", solveRouter);
 
 router.use(authenticateJWT);
 router.use(logRequest);
-router.use("/api/solve", solveRouter);
 router.use("/api/history", historyRouter);
+router.use("/api/user", userRouter);
 
 export default router;

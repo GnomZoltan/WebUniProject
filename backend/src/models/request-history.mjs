@@ -1,12 +1,9 @@
 import mongoose from "mongoose";
 
 const requestHistorySchema = new mongoose.Schema({
-  method: String,
-  url: String,
-  headers: Object,
-  body: Object,
-  query: Object,
-  params: Object,
+  description: { type: String, required: true },
+  outputResult: { type: Object, required: true },
+  outputComplexity: { type: Object, required: true },
   timestamp: { type: Date, default: Date.now },
   user: {
     type: mongoose.Schema.Types.ObjectId,

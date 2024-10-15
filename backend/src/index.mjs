@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import routes from "./routers/main-router.mjs";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 mongoose
   .connect("mongodb://localhost/web_uni_project")
