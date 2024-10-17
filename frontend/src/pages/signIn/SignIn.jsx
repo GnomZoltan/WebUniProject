@@ -21,8 +21,6 @@ const SignIn = () => {
 
       const accessToken = response.data;
 
-      console.log(accessToken);
-
       setToken(accessToken);
 
       navigate("/");

@@ -2,12 +2,6 @@ import axiosInstance from "./axios";
 
 const AUTH_CONTROLLER = "/auth";
 
-export function getAll() {
-  return axiosInstance.get("/user/", {
-    withCredentials: true,
-  });
-}
-
 export function loginUser(email, password) {
   const loginDto = {
     email: email,
@@ -19,14 +13,16 @@ export function loginUser(email, password) {
   });
 }
 
-export function registerUser(email, password, username) {
+export function registerUser(username, email, password) {
   const registerDto = {
     username: username,
     email: email,
     password: password,
   };
 
-  return axiosInstance.post(AUTH_CONTROLLER + "/register", registerDto);
+  return axiosInstance.post(AUTH_CONTROLLER + "/register", registerDto, {
+    withCredentials: true,
+  });
 }
 
 export function refreshToken() {

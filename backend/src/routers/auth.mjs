@@ -23,7 +23,7 @@ router.post("/register", async (req, res) => {
   const accessToken = jwt.sign(
     { _id: savedUser._id },
     "process.env.JWT_SECRET_ACCESS_KEY",
-    { expiresIn: "1m" }
+    { expiresIn: "1h" }
   );
 
   const refreshToken = jwt.sign(
@@ -50,7 +50,7 @@ router.post("/login", async (req, res) => {
   const accessToken = jwt.sign(
     { _id: user._id },
     "process.env.JWT_SECRET_ACCESS_KEY",
-    { expiresIn: "1m" }
+    { expiresIn: "1h" }
   );
 
   const refreshToken = jwt.sign(
@@ -80,7 +80,7 @@ router.get("/refresh", async (req, res) => {
     const accessToken = jwt.sign(
       { _id: claims._id },
       "process.env.JWT_SECRET_ACCESS_KEY",
-      { expiresIn: "1m" }
+      { expiresIn: "1h" }
     );
 
     res.send(accessToken);

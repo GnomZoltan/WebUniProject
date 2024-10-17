@@ -4,6 +4,7 @@ import routes from "./routers/main-router.mjs";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import morgan from "morgan";
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use(morgan("combined"));
 
 app.use(routes);
 

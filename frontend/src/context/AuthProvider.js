@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState();
 
   useEffect(() => {
-    console.log("in use effect");
     const fetchRefresh = async () => {
       try {
         const response = await refreshToken();
@@ -33,8 +32,6 @@ export const AuthProvider = ({ children }) => {
 
   useLayoutEffect(() => {
     const authInterceptor = axiosInstance.interceptors.request.use((config) => {
-      console.log("in auth interceptor1");
-      console.log(token);
       config.headers.Authorization =
         !config._retry && token
           ? `Bearer ${token}`
@@ -51,7 +48,6 @@ export const AuthProvider = ({ children }) => {
     const refreshInterceptor = axiosInstance.interceptors.response.use(
       (response) => response,
       async (error) => {
-        console.log("in auth interceptor2");
         const prevRequest = error.config;
         if (
           error.response.status === 403 &&

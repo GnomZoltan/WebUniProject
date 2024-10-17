@@ -2,17 +2,19 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+//onProgress = () => {}
+
 export async function solveByJacobi(
   matrix,
   results,
   tolerance = 1e-10,
-  maxIterations = 200,
-  onProgress = () => {}
+  maxIterations = 200
 ) {
-  const n = matrix.length;
-  let x = new Array(n).fill(0);
-  let xNew = new Array(n).fill(0);
+  console.log("servise");
 
+  const n = matrix.length;
+  let x = new Array(n).fill(0); // Initial guess (0s)
+  let xNew = new Array(n).fill(0); // New values
   let iterations = 0;
   let diff = Infinity;
 
@@ -24,28 +26,27 @@ export async function solveByJacobi(
 
       for (let j = 0; j < n; j++) {
         if (i !== j) {
-          sum -= matrix[i][j] * x[j];
+          sum -= matrix[i][j] * x[j]; // Subtract current values
         }
       }
 
-      xNew[i] = sum / matrix[i][i];
+      xNew[i] = sum / matrix[i][i]; // Update new value for x
 
+      // Calculate the maximum difference for convergence
       diff = Math.max(diff, Math.abs(xNew[i] - x[i]));
     }
 
+    // Update x to the new values
     x = [...xNew];
     iterations++;
   }
 
-  // Відправка прогресу
-  const progress = Math.floor((iterations / maxIterations) * 100);
-  onProgress(progress);
-
   await delay(20000);
+  // Format results to 5 decimal places
   return x;
 }
 
-export async function solveByCramer(matrix, results, onProgress = () => {}) {
+export async function solveByCramer(matrix, results) {
   const n = matrix.length;
 
   const determinant = (m) => {
@@ -83,19 +84,15 @@ export async function solveByCramer(matrix, results, onProgress = () => {}) {
     solution[i] = detAi / detA;
   }
 
-  // Відправка прогресу
-  const progress = Math.floor(((i + 1) / n) * 100);
-  onProgress(progress);
+  // // Відправка прогресу
+  // const progress = Math.floor(((i + 1) / n) * 100);
+  // onProgress(progress);
 
-  await delay(20000);
+  await delay(350000);
   return solution;
 }
 
-export async function solveByGauss(
-  coefficients,
-  results,
-  onProgress = () => {}
-) {
+export async function solveByGauss(coefficients, results) {
   const n = coefficients.length;
 
   const matrix = coefficients.map((row, i) => [...row, results[i]]);
@@ -107,11 +104,11 @@ export async function solveByGauss(
         matrix[j][k] -= factor * matrix[i][k];
       }
     }
-    // Відправка прогресу після кожного рядка
-    const progress = Math.floor(((i + 1) / n) * 50); // 50% прогрес на прямий хід
-    onProgress(progress);
+    // // Відправка прогресу після кожного рядка
+    // const progress = Math.floor(((i + 1) / n) * 50); // 50% прогрес на прямий хід
+    // onProgress(progress);
 
-    await delay(10000); // Імітація довготривалої операції
+    //await delay(10000); // Імітація довготривалої операції
   }
 
   const solution = new Array(n);
@@ -123,10 +120,10 @@ export async function solveByGauss(
     solution[i] /= matrix[i][i];
   }
 
-  // Відправка прогресу після кожного обчислення змінної
-  const progress = 50 + Math.floor(((n - i) / n) * 50); // Друга половина прогресу
-  onProgress(progress);
+  // // Відправка прогресу після кожного обчислення змінної
+  // const progress = 50 + Math.floor(((n - i) / n) * 50); // Друга половина прогресу
+  // onProgress(progress);
 
-  await delay(10000);
+  await delay(20000);
   return solution;
 }

@@ -1,44 +1,218 @@
-body {
-  font-family: Arial, sans-serif;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-x: hidden;
 }
 
-.auth-buttons {
+.home-container {
   display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.header-button {
-  background-color: white;
-  color: #4caf50;
-  border: 1px solid white;
-  padding: 10px 15px;
+.header,
+.footer {
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+}
+
+.project-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.header-buttons .button {
   margin-left: 10px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.header-buttons .button:hover {
+  background-color: #0056b3;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Ліва панель історії */
+.request-history {
+  flex: 0.2;
+  background-color: #f9f9f9;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: calc(100vh - 160px);
+}
+
+.request-history h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.history-item {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+/* Кнопка Refresh */
+.refresh-btn {
+  margin-bottom: 10px;
+  background-color: #000;
+  color: white;
+  padding: 10px 15px;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
-.header-button:hover {
+.refresh-btn:hover {
+  background-color: #3b3e41;
+}
+
+/* Права панель */
+.solver-panel {
+  display: flex;
+  flex: 0.8;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Основна частина (ліворуч) */
+.solver-main {
+  flex: 0.75;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  align-items: center;
+  justify-content: center; /* Вирівнювання по вертикалі */
+}
+
+.input-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.input-area label {
+  font-size: 18px;
+  font-weight: bold;
+  align-self: flex-start; /* Вирівнювання заголовків ліворуч */
+}
+
+.input-area textarea {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  resize: vertical;
+  font-size: 16px;
+}
+
+/* Специфічні стилі для textarea */
+.coefficients-textarea {
+  height: 160px; /* Висота для першої textarea в два рази більша */
+}
+
+.results-textarea {
+  height: 60px; /* Висота для другої textarea */
+}
+
+.solve-btn {
+  padding: 15px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #000;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+  width: 100%; /* Ширина кнопки на всю форму */
+  max-width: 400px; /* Максимальна ширина кнопки */
+}
+
+.solve-btn:hover {
+  background-color: #3b3e41;
+}
+
+/* Панель результатів (праворуч) */
+.result-panel {
+  flex: 0.25;
   background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 5px;
+  height: calc(100vh - 160px);
+  overflow-y: auto;
+  font-size: 18px; /* Збільшений розмір шрифту */
+  line-height: 1.6; /* Поліпшення читабельності */
 }
 
-.App-main {
-  flex: 1;
+/* Стилі для метод-кнопок */
+.method-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.method-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s, border-color 0.3s;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.get-all-button {
-  padding: 15px 30px;
-  font-size: 1.2rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.method-btn.active {
+  background-color: #000;
+  border-color: #007bff;
 }
 
-.get-all-button:hover {
-  background-color: #45a049;
+.method-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
 }
