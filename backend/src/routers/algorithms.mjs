@@ -9,27 +9,7 @@ import { jakobi, cramer, gauss } from "../services/openaiFunctions.mjs";
 
 const router = Router();
 
-router.get("/progress", (req, res) => {
-  // Встановлення заголовків для SSE
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-
-  const sendProgress = (progress) => {
-    res.write(`data: ${JSON.stringify({ progress })}\n\n`);
-  };
-
-  req.on("close", () => {
-    console.log("Client disconnected");
-    res.end();
-  });
-
-  // Цей ендпоінт буде чекати підписку на подію обчислення
-});
-
 router.post("/jakobi", async (req, res) => {
-  console.log("controller");
-
   const result = await solveByJacobi(req.body.coefficients, req.body.results);
 
   if (!result) return res.status(404).send({ message: "Invalid input" });
@@ -41,13 +21,7 @@ router.post("/jakobi", async (req, res) => {
 });
 
 router.post("/cramer", async (req, res) => {
-  const result = await solveByCramer(
-    req.body.coefficients,
-    req.body.results
-    // (progress) => {
-    //   console.log(`Cramer Progress: ${progress}%`);
-    // }
-  );
+  const result = await solveByCramer(req.body.coefficients, req.body.results);
 
   if (!result) return res.status(404).send({ message: "Invalid input" });
   const complexity = await calculateComplexity(cramer);
@@ -56,13 +30,7 @@ router.post("/cramer", async (req, res) => {
 });
 
 router.post("/gauss", async (req, res) => {
-  const result = await solveByGauss(
-    req.body.coefficients,
-    req.body.results
-    // (progress) => {
-    //   console.log(`Cramer Progress: ${progress}%`);
-    // }
-  );
+  const result = await solveByGauss(req.body.coefficients, req.body.results);
 
   if (!result) return res.status(404).send({ message: "Invalid input" });
   const complexity = await calculateComplexity(gauss);

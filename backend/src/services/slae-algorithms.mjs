@@ -2,19 +2,15 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-//onProgress = () => {}
-
 export async function solveByJacobi(
   matrix,
   results,
   tolerance = 1e-10,
   maxIterations = 200
 ) {
-  console.log("servise");
-
   const n = matrix.length;
-  let x = new Array(n).fill(0); // Initial guess (0s)
-  let xNew = new Array(n).fill(0); // New values
+  let x = new Array(n).fill(0);
+  let xNew = new Array(n).fill(0);
   let iterations = 0;
   let diff = Infinity;
 
@@ -26,23 +22,20 @@ export async function solveByJacobi(
 
       for (let j = 0; j < n; j++) {
         if (i !== j) {
-          sum -= matrix[i][j] * x[j]; // Subtract current values
+          sum -= matrix[i][j] * x[j];
         }
       }
 
-      xNew[i] = sum / matrix[i][i]; // Update new value for x
+      xNew[i] = sum / matrix[i][i];
 
-      // Calculate the maximum difference for convergence
       diff = Math.max(diff, Math.abs(xNew[i] - x[i]));
     }
 
-    // Update x to the new values
     x = [...xNew];
     iterations++;
   }
 
   await delay(20000);
-  // Format results to 5 decimal places
   return x;
 }
 
@@ -84,10 +77,6 @@ export async function solveByCramer(matrix, results) {
     solution[i] = detAi / detA;
   }
 
-  // // Відправка прогресу
-  // const progress = Math.floor(((i + 1) / n) * 100);
-  // onProgress(progress);
-
   await delay(350000);
   return solution;
 }
@@ -104,11 +93,6 @@ export async function solveByGauss(coefficients, results) {
         matrix[j][k] -= factor * matrix[i][k];
       }
     }
-    // // Відправка прогресу після кожного рядка
-    // const progress = Math.floor(((i + 1) / n) * 50); // 50% прогрес на прямий хід
-    // onProgress(progress);
-
-    //await delay(10000); // Імітація довготривалої операції
   }
 
   const solution = new Array(n);
@@ -119,10 +103,6 @@ export async function solveByGauss(coefficients, results) {
     }
     solution[i] /= matrix[i][i];
   }
-
-  // // Відправка прогресу після кожного обчислення змінної
-  // const progress = 50 + Math.floor(((n - i) / n) * 50); // Друга половина прогресу
-  // onProgress(progress);
 
   await delay(20000);
   return solution;

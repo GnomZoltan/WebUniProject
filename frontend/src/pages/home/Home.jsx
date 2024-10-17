@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./Home.css";
 import { solveJakobi, solveCramer, solveGauss } from "../../api/solveMetods";
 import { getHistory } from "../../api/history";
@@ -11,10 +11,12 @@ import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   const { token } = useAuth();
   const [activeMethod, setActiveMethod] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState({ result: null, complexity: null });
   const [coefficients, setCoefficients] = useState("");
   const [results, setResults] = useState("");
   const [requestHistory, setRequestHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortController = useRef(null);
 
   const handleMethodChange = (method) => {
     setActiveMethod((prev) => (prev === method ? "" : method));
@@ -33,7 +35,7 @@ const App = () => {
       const parsedResults = JSON.parse(results);
 
       if (parsedCoefficients.length >= 11) {
-        toast.error("Too many equasions");
+        toast.error("Too many equasions or results");
         throw new Error();
       }
 
@@ -41,17 +43,55 @@ const App = () => {
         toast.error("Too many results");
         throw new Error();
       }
-      let response;
-      if (activeMethod === "Jakobi")
-        response = await solveJakobi(parsedCoefficients, parsedResults);
-      if (activeMethod === "Cramer")
-        response = await solveCramer(parsedCoefficients, parsedResults);
-      if (activeMethod === "Gauss")
-        response = await solveGauss(parsedCoefficients, parsedResults);
 
-      setResult(response.data);
+      setIsLoading(true);
+      abortController.current = new AbortController();
+
+      let response;
+
+      if (activeMethod === "Jakobi")
+        response = await solveJakobi(
+          parsedCoefficients,
+          parsedResults,
+          abortController.current.signal
+        );
+      if (activeMethod === "Cramer")
+        response = await solveCramer(
+          parsedCoefficients,
+          parsedResults,
+          abortController.current.signal
+        );
+      if (activeMethod === "Gauss")
+        response = await solveGauss(
+          parsedCoefficients,
+          parsedResults,
+          abortController.current.signal
+        );
+
+      setResult({
+        result: response.data.result,
+        complexity: response.data.complexity,
+      });
     } catch (err) {
-      toast.error("Failed to solve method.");
+      if (
+        !(
+          err instanceof TypeError &&
+          err.message.includes(
+            "Cannot read properties of undefined (reading 'status')"
+          )
+        )
+      )
+        console.error(err.message);
+    } finally {
+      setIsLoading(false);
+      abortController.current = null;
+    }
+  };
+
+  const handleCancel = () => {
+    if (abortController.current) {
+      abortController.current.abort();
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +113,6 @@ const App = () => {
         </div>
       </header>
       <div className="content">
-        {/* Ліва панель історії */}
         <div className="request-history">
           <h2>Request History</h2>
           <button className="button refresh-btn" onClick={handleRefresh}>
@@ -99,9 +138,7 @@ const App = () => {
           </div>
         </div>
 
-        {/* Права панель */}
         <div className="solver-panel">
-          {/* Основна частина з полями вводу */}
           <div className="solver-main">
             <div className="method-buttons">
               {["Jakobi", "Cramer", "Gauss"].map((method) => (
@@ -136,19 +173,25 @@ const App = () => {
                 required
                 placeholder="Enter your results as JSON, e.g. [24, 15, 30, ...]"
               />
-              <button className="button solve-btn" onClick={handleSolve}>
-                Solve
-              </button>
+              {isLoading ? (
+                <button className="button solve-btn" onClick={handleCancel}>
+                  Cancel
+                </button>
+              ) : (
+                <button className="button solve-btn" onClick={handleSolve}>
+                  Solve
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Панель результатів */}
           {result && (
             <div className="result-panel">
               <h3>Results:</h3>
               <pre>{JSON.stringify(result.result, null, 2)}</pre>
               <h4>Complexity:</h4>
               <p>{result.complexity}</p>
+              {isLoading && <div className="spinner"></div>}
             </div>
           )}
         </div>
