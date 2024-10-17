@@ -22,13 +22,13 @@ router.post("/register", async (req, res) => {
 
   const accessToken = jwt.sign(
     { _id: savedUser._id },
-    "process.env.JWT_SECRET_ACCESS_KEY",
+    process.env.JWT_SECRET_ACCESS_KEY,
     { expiresIn: "1h" }
   );
 
   const refreshToken = jwt.sign(
     { _id: savedUser._id },
-    "process.env.JWT_SECRET_REFRESH_KEY"
+    process.env.JWT_SECRET_REFRESH_KEY
   );
 
   res.cookie("jwt-refresh", refreshToken, {
@@ -49,13 +49,13 @@ router.post("/login", async (req, res) => {
 
   const accessToken = jwt.sign(
     { _id: user._id },
-    "process.env.JWT_SECRET_ACCESS_KEY",
+    process.env.JWT_SECRET_ACCESS_KEY,
     { expiresIn: "1h" }
   );
 
   const refreshToken = jwt.sign(
     { _id: user._id },
-    "process.env.JWT_SECRET_REFRESH_KEY"
+    process.env.JWT_SECRET_REFRESH_KEY
   );
 
   res.cookie("jwt-refresh", refreshToken, {
@@ -70,16 +70,13 @@ router.get("/refresh", async (req, res) => {
   try {
     const refreshToken = req.cookies["jwt-refresh"];
 
-    const claims = jwt.verify(
-      refreshToken,
-      "process.env.JWT_SECRET_REFRESH_KEY"
-    );
+    const claims = jwt.verify(refreshToken, process.env.JWT_SECRET_REFRESH_KEY);
 
     if (!claims) res.status(401).send({ message: "unaunthenticated" });
 
     const accessToken = jwt.sign(
       { _id: claims._id },
-      "process.env.JWT_SECRET_ACCESS_KEY",
+      process.env.JWT_SECRET_ACCESS_KEY,
       { expiresIn: "1h" }
     );
 

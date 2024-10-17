@@ -11,7 +11,7 @@ const authenticateJWT = async (req, res, next) => {
       return res.status(401).send("Authentication credentials are required.");
     }
 
-    const claims = jwt.verify(token, "process.env.JWT_SECRET_ACCESS_KEY");
+    const claims = jwt.verify(token, process.env.JWT_SECRET_ACCESS_KEY);
 
     if (!claims) res.status(401).send({ message: "unaunthenticated" });
     const user = await User.findOne({ _id: claims._id });

@@ -15,8 +15,6 @@ router.post("/jakobi", async (req, res) => {
   if (!result) return res.status(404).send({ message: "Invalid input" });
   const complexity = await calculateComplexity(jakobi);
 
-  console.log({ result, complexity });
-
   res.status(200).send({ result, complexity });
 });
 

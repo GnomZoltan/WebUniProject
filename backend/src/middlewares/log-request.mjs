@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 const logRequest = async (req, res, next) => {
   const refreshToken = req.cookies["jwt-refresh"];
 
-  const claims = jwt.verify(refreshToken, "process.env.JWT_SECRET_REFRESH_KEY");
+  const claims = jwt.verify(refreshToken, process.env.JWT_SECRET_REFRESH_KEY);
 
   if (!claims) res.status(401).send({ message: "unaunthenticated" });
 

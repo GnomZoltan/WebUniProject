@@ -8,10 +8,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const refreshToken = req.cookies["jwt-refresh"];
-    const claims = jwt.verify(
-      refreshToken,
-      "process.env.JWT_SECRET_REFRESH_KEY"
-    );
+    const claims = jwt.verify(refreshToken, process.env.JWT_SECRET_REFRESH_KEY);
 
     if (!claims) {
       return res.status(401).send({ message: "Unauthenticated" });

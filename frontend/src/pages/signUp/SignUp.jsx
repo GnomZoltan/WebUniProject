@@ -14,9 +14,34 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
+  const validateUsername = (username) => {
+    return username.length >= 3 && username.length <= 10;
+  };
+
+  const validatePassword = (password) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const isLengthValid = password.length >= 4 && password.length <= 10;
+
+    return hasUpperCase && hasLowerCase && hasNumber && isLengthValid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!validateUsername(username)) {
+      setError("Username must be between 3 and 10 characters.");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError(
+        "Password must be between 4 and 10 characters and include at least one uppercase letter, one lowercase letter, and one digit."
+      );
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -28,7 +53,6 @@ const SignUp = () => {
       const accessToken = response.data;
 
       setToken(accessToken);
-
       navigate("/");
     } catch (err) {
       setError("Failed to sign up. Please try again.");
