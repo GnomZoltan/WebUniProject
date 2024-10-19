@@ -1,6 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./Home.css";
-import { solveJakobi, solveCramer, solveGauss } from "../../api/solveMetods";
+import {
+  solveJakobi,
+  solveCramer,
+  solveGauss,
+  getTaskStatus,
+} from "../../api/solveMetods";
 import { getHistory } from "../../api/history";
 import { useAuth } from "../../context/AuthProvider";
 import LoginRegisterButton from "../loginOrLogout/LoginRegisterButton";
@@ -11,15 +16,34 @@ import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   const { token } = useAuth();
   const [activeMethod, setActiveMethod] = useState("");
-  const [result, setResult] = useState({ result: null, complexity: null });
+  const [result, setResult] = useState({
+    status: "none",
+    result: null,
+    complexity: null,
+  });
   const [coefficients, setCoefficients] = useState("");
   const [results, setResults] = useState("");
   const [requestHistory, setRequestHistory] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const abortController = useRef(null);
+  //const [isLoading, setIsLoading] = useState(false);
+  //const abortController = useRef(null);
 
   const handleMethodChange = (method) => {
     setActiveMethod((prev) => (prev === method ? "" : method));
+  };
+
+  const getProgressValue = (status) => {
+    switch (status) {
+      case "pending":
+        return 0;
+      case "solving-equations":
+        return 33;
+      case "calculating-complexity":
+        return 66;
+      case "completed":
+        return 100;
+      default:
+        return 0;
+    }
   };
 
   const handleSolve = async (e) => {
@@ -44,34 +68,51 @@ const App = () => {
         throw new Error();
       }
 
-      setIsLoading(true);
-      abortController.current = new AbortController();
+      //setIsLoading(true);
+      //abortController.current = new AbortController();
 
-      let response;
+      let immediateResponse;
 
       if (activeMethod === "Jakobi")
-        response = await solveJakobi(
+        immediateResponse = await solveJakobi(
           parsedCoefficients,
-          parsedResults,
-          abortController.current.signal
+          parsedResults
+          //abortController.current.signal
         );
       if (activeMethod === "Cramer")
-        response = await solveCramer(
+        immediateResponse = await solveCramer(
           parsedCoefficients,
-          parsedResults,
-          abortController.current.signal
+          parsedResults
+          //abortController.current.signal
         );
       if (activeMethod === "Gauss")
-        response = await solveGauss(
+        immediateResponse = await solveGauss(
           parsedCoefficients,
-          parsedResults,
-          abortController.current.signal
+          parsedResults
+          //abortController.current.signal
         );
 
-      setResult({
-        result: response.data.result,
-        complexity: response.data.complexity,
-      });
+      const taskId = immediateResponse.data.taskId;
+
+      const checkTaskStatus = async (attempt = 1) => {
+        const taskResponse = await getTaskStatus(taskId);
+
+        setResult({
+          status: taskResponse.data.status,
+          result: taskResponse.data.result,
+          complexity: taskResponse.data.complexity,
+        });
+
+        if (attempt === 1) {
+          setTimeout(() => checkTaskStatus(attempt + 1), 2000);
+        } else if (taskResponse.data.status !== "completed" && attempt < 4) {
+          setTimeout(() => checkTaskStatus(attempt + 1), 12000);
+        } else if (taskResponse.data.status !== "completed") {
+          toast.error("Failed to complete task in time.");
+        }
+      };
+
+      await checkTaskStatus();
     } catch (err) {
       if (
         !(
@@ -83,17 +124,17 @@ const App = () => {
       )
         console.error(err.message);
     } finally {
-      setIsLoading(false);
-      abortController.current = null;
+      //setIsLoading(false);
+      //abortController.current = null;
     }
   };
 
-  const handleCancel = () => {
-    if (abortController.current) {
-      abortController.current.abort();
-      setIsLoading(false);
-    }
-  };
+  // const handleCancel = () => {
+  //   if (abortController.current) {
+  //     abortController.current.abort();
+  //     //setIsLoading(false);
+  //   }
+  // };
 
   const handleRefresh = async () => {
     try {
@@ -173,7 +214,7 @@ const App = () => {
                 required
                 placeholder="Enter your results as JSON, e.g. [24, 15, 30, ...]"
               />
-              {isLoading ? (
+              {/* {isLoading ? (
                 <button className="button solve-btn" onClick={handleCancel}>
                   Cancel
                 </button>
@@ -181,17 +222,28 @@ const App = () => {
                 <button className="button solve-btn" onClick={handleSolve}>
                   Solve
                 </button>
-              )}
+              )} */}
+              <button className="button solve-btn" onClick={handleSolve}>
+                Solve
+              </button>
             </div>
           </div>
 
           {result && (
             <div className="result-panel">
+              <h3>Status:</h3>
+              <p>{result.status}</p>
+              <div className="progress-bar">
+                <div
+                  className="progress-bar__fill"
+                  style={{ width: `${getProgressValue(result.status)}%` }}
+                ></div>
+              </div>
               <h3>Results:</h3>
               <pre>{JSON.stringify(result.result, null, 2)}</pre>
-              <h4>Complexity:</h4>
+              <h3>Complexity:</h3>
               <p>{result.complexity}</p>
-              {isLoading && <div className="spinner"></div>}
+              {/* {isLoading && <div className="spinner"></div>} */}
             </div>
           )}
         </div>

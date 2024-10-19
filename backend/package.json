@@ -13,7 +13,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "agenda": "^5.0.0",
     "bcryptjs": "^2.4.3",
+    "bull": "^4.16.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -23,7 +25,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.0",
     "morgan": "^1.10.0",
-    "openai": "^4.67.3"
+    "openai": "^4.67.3",
+    "path": "^0.12.7",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

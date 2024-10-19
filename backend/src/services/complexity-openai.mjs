@@ -24,5 +24,11 @@ export async function calculateComplexity(myFunction) {
   });
 
   const complexity = response.choices[0].message.content.trim();
+
+  const endTime = Date.now() + 10 * 1000;
+  while (Date.now() < endTime) {
+    // Виконуємо "порожню" операцію, щоб тримати процес зайнятим
+    Math.sqrt(Math.random());
+  }
   return complexity;
 }

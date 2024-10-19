@@ -1,7 +1,3 @@
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function solveByJacobi(
   matrix,
   results,
@@ -35,7 +31,11 @@ export async function solveByJacobi(
     iterations++;
   }
 
-  await delay(20000);
+  const endTime = Date.now() + 20 * 1000;
+  while (Date.now() < endTime) {
+    // Виконуємо "порожню" операцію, щоб тримати процес зайнятим
+    Math.sqrt(Math.random());
+  }
   return x;
 }
 
@@ -77,7 +77,11 @@ export async function solveByCramer(matrix, results) {
     solution[i] = detAi / detA;
   }
 
-  await delay(350000);
+  const endTime = Date.now() + 10 * 1000;
+  while (Date.now() < endTime) {
+    // Виконуємо "порожню" операцію, щоб тримати процес зайнятим
+    Math.sqrt(Math.random());
+  }
   return solution;
 }
 
@@ -104,6 +108,10 @@ export async function solveByGauss(coefficients, results) {
     solution[i] /= matrix[i][i];
   }
 
-  await delay(20000);
+  const endTime = Date.now() + 10 * 1000;
+  while (Date.now() < endTime) {
+    // Виконуємо "порожню" операцію, щоб тримати процес зайнятим
+    Math.sqrt(Math.random());
+  }
   return solution;
 }

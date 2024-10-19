@@ -10,7 +10,7 @@ dotenv.config();
 
 mongoose
   .connect("mongodb://localhost/web_uni_project")
-  .then(() => console.log("Connected to Database"))
+  .then(async () => console.log("Connected to Database"))
   .catch((err) => console.log(`Error: ${err}`));
 
 const app = express();
