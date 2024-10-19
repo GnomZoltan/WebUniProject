@@ -10,7 +10,12 @@ function handleError(error) {
 
 export function getTaskStatus(taskId) {
   return axiosInstance.get(SOLVE_CONTROLLER + `/status/${taskId}`, {
-    params: { taskId },
+    withCredentials: true,
+  });
+}
+
+export function cancelTask(taskId) {
+  return axiosInstance.post(SOLVE_CONTROLLER + `/cancel/${taskId}`, {
     withCredentials: true,
   });
 }

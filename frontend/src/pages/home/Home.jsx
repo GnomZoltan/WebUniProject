@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./Home.css";
 import {
   solveJakobi,
   solveCramer,
   solveGauss,
   getTaskStatus,
+  cancelTask,
 } from "../../api/solveMetods";
 import { getHistory } from "../../api/history";
 import { useAuth } from "../../context/AuthProvider";
@@ -24,8 +25,8 @@ const App = () => {
   const [coefficients, setCoefficients] = useState("");
   const [results, setResults] = useState("");
   const [requestHistory, setRequestHistory] = useState([]);
-  //const [isLoading, setIsLoading] = useState(false);
-  //const abortController = useRef(null);
+  //const [taskId, setTaskId] = useState(null);
+  //const checkTimeoutRef = useRef(null);
 
   const handleMethodChange = (method) => {
     setActiveMethod((prev) => (prev === method ? "" : method));
@@ -68,31 +69,24 @@ const App = () => {
         throw new Error();
       }
 
-      //setIsLoading(true);
-      //abortController.current = new AbortController();
-
       let immediateResponse;
 
       if (activeMethod === "Jakobi")
         immediateResponse = await solveJakobi(
           parsedCoefficients,
           parsedResults
-          //abortController.current.signal
         );
       if (activeMethod === "Cramer")
         immediateResponse = await solveCramer(
           parsedCoefficients,
           parsedResults
-          //abortController.current.signal
         );
       if (activeMethod === "Gauss")
-        immediateResponse = await solveGauss(
-          parsedCoefficients,
-          parsedResults
-          //abortController.current.signal
-        );
+        immediateResponse = await solveGauss(parsedCoefficients, parsedResults);
 
       const taskId = immediateResponse.data.taskId;
+
+      //setTaskId(taskId);
 
       const checkTaskStatus = async (attempt = 1) => {
         const taskResponse = await getTaskStatus(taskId);
@@ -123,16 +117,18 @@ const App = () => {
         )
       )
         console.error(err.message);
-    } finally {
-      //setIsLoading(false);
-      //abortController.current = null;
     }
   };
 
-  // const handleCancel = () => {
-  //   if (abortController.current) {
-  //     abortController.current.abort();
-  //     //setIsLoading(false);
+  // const handleCancel = async () => {
+  //   if (taskId) {
+  //     try {
+  //       await cancelTask(taskId);
+  //       clearTimeout(checkTimeoutRef.current);
+  //       toast.success("Task canceled successfully.");
+  //     } catch (error) {
+  //       toast.error("Failed to cancel task.");
+  //     }
   //   }
   // };
 
@@ -214,18 +210,12 @@ const App = () => {
                 required
                 placeholder="Enter your results as JSON, e.g. [24, 15, 30, ...]"
               />
-              {/* {isLoading ? (
-                <button className="button solve-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              ) : (
-                <button className="button solve-btn" onClick={handleSolve}>
-                  Solve
-                </button>
-              )} */}
               <button className="button solve-btn" onClick={handleSolve}>
                 Solve
               </button>
+              {/* <button className="button solve-btn" onClick={handleCancel}>
+                Cancel
+              </button> */}
             </div>
           </div>
 
@@ -243,7 +233,6 @@ const App = () => {
               <pre>{JSON.stringify(result.result, null, 2)}</pre>
               <h3>Complexity:</h3>
               <p>{result.complexity}</p>
-              {/* {isLoading && <div className="spinner"></div>} */}
             </div>
           )}
         </div>

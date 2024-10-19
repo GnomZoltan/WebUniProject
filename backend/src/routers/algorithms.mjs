@@ -23,6 +23,25 @@ router.get("/status/:taskId", async (req, res) => {
   }
 });
 
+router.post("/cancel/:taskId", async (req, res) => {
+  const { taskId } = req.params;
+
+  try {
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).send({ message: "Task not found" });
+
+    task.status = "canceled";
+    await task.save();
+
+    res.status(200).send({ message: "Task canceled successfully" });
+  } catch (error) {
+    res.status(500).send({
+      message: "Failed to cancel task",
+      error: error.message,
+    });
+  }
+});
+
 router.post("/jakobi", async (req, res) => {
   const { coefficients, results } = req.body;
 
